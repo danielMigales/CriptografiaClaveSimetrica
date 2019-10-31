@@ -1,7 +1,7 @@
 package controlador;
 
-import algoritmo.Cifrado;
-import static algoritmo.Cifrado.*;
+import algoritmo.Algoritmo;
+import static algoritmo.Algoritmo.*;
 import interfazGrafica.UI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,13 +64,13 @@ public class Controlador implements ActionListener {
                         alfabeto = Alfabeto.ENG.toString();
                         break;
                 }
-                resultado = Cifrado.codificarCesar(texto, clave, alfabeto);
+                resultado = Algoritmo.codificarCesar(texto, clave, alfabeto);
                 userInterface.getResultadoEncriptacion().setText(resultado);
                 break;
 
             case 1: //CUANDO SE SELECCIONA ALGORITMO AES
 
-                byte[] contraseña = texto.getBytes(StandardCharsets.UTF_8);
+                byte[] textoEnBytes = texto.getBytes(StandardCharsets.UTF_8);
                 int valorModoAES = userInterface.getSelectorModoAES().getSelectedIndex();
                 int valorKey = userInterface.getSelectorKey().getSelectedIndex();
                 int keySize = 0;
@@ -95,17 +95,18 @@ public class Controlador implements ActionListener {
 
                     case 0: //CASO ECB
 
-                        byte[] encriptadoECB = encryptDataECB(skey, contraseña);
+                        byte[] encriptadoECB = encryptDataECB(skey, textoEnBytes);
                         resultado = byteToHex(encriptadoECB);
                         userInterface.getResultadoEncriptacion().setText(resultado);
 
                     case 1: //CASO CBC
 
-                        byte[] encriptadoCBC = encryptDataCBC(skey, contraseña);
+                        byte[] encriptadoCBC = encryptDataCBC(skey, textoEnBytes);
                         resultado = byteToHex(encriptadoCBC);
                         userInterface.getResultadoEncriptacion().setText(resultado);
                         break;
                 }
+
         }
     }
 
@@ -126,36 +127,36 @@ public class Controlador implements ActionListener {
                 String alfabeto = "";
 
                 switch (valorAlfabeto) { //SELECTOR PARA EL TIPO DE ALFABETO
-                    
+
                     case 0:
                         alfabeto = Alfabeto.ESP.toString();
                         break;
-                        
+
                     case 1:
                         alfabeto = Alfabeto.ENG.toString();
                         break;
                 }
-                resultado = Cifrado.deCodificarCesar(texto, clave, alfabeto);
+                resultado = Algoritmo.deCodificarCesar(texto, clave, alfabeto);
                 userInterface.getResultadoDesencriptacion().setText(resultado);
                 break;
 
             case 1: //ALGORITMO AES
 
-                byte[] contraseña = texto.getBytes(StandardCharsets.UTF_8);
+                byte[] textoEnBytes = hexToByte(texto);
                 int valorModoAES = userInterface.getSelectorModoAES().getSelectedIndex();
                 int valorKey = userInterface.getSelectorKey().getSelectedIndex();
                 int keySize = 0;
 
                 switch (valorKey) { //VALOR SELECCIONADO EN LA SKEY
-                    
+
                     case 0:
                         keySize = 128;
                         break;
-                        
+
                     case 1:
                         keySize = 192;
                         break;
-                        
+
                     case 2:
                         keySize = 256;
                         break;
@@ -166,18 +167,19 @@ public class Controlador implements ActionListener {
 
                     case 0: //CASO ECB
 
-                        byte[] desencriptado = decryptDataECB(skey, contraseña);
-                        resultado = byteToHex(desencriptado);
+                        byte[] desencriptadoECB = decryptDataECB(skey, textoEnBytes);
+                        resultado = new String(desencriptadoECB);
                         userInterface.getResultadoDesencriptacion().setText(resultado);
                         break;
 
                     case 1: //CASO CBC
 
-                        byte[] desencriptadoCBC = encryptDataCBC(skey, contraseña);
-                        resultado = byteToHex(desencriptadoCBC);
-                        userInterface.getResultadoEncriptacion().setText(resultado);
+                        byte[] desencriptadoCBC = decryptDataCBC(skey, textoEnBytes);
+                        resultado = new String(desencriptadoCBC);
+                        userInterface.getResultadoDesencriptacion().setText(resultado);
                         break;
                 }
+
         }
     }
 }
