@@ -37,6 +37,8 @@ public class Cifrado {
         return encriptado.toString();
     }
 
+    //DECODIFICACION CESAR
+    
     public static String deCodificarCesar(String texto, int clave, String alfabeto) {
         char inputChar;
         int charValue;
@@ -58,7 +60,7 @@ public class Cifrado {
         return encriptado.toString();
     } 
     
-    //CODIFICACION CESAR
+    //CODIFICACION AES
 
     public static SecretKey keygenKeyGeneration(int keySize) {
         SecretKey sKey = null;
@@ -86,6 +88,8 @@ public class Cifrado {
         return encryptedData;
     }
 
+    //DECODIFICACION AES
+    
     public static byte[] decryptData(SecretKey sKey, byte[] data) {
         byte[] decryptedData = null;
         try {
