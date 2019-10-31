@@ -30,29 +30,36 @@ public class Controlador implements ActionListener {
         CommandName comando = CommandName.valueOf(e.getActionCommand());
 
         if (comando == CommandName.ENCRIPTAR_BTN) {
-            System.out.println("Boton Encriptado pulsado. ");
+            System.out.println("El boton de encriptado ha sido pulsado. ");
             encriptarActionPerformed();
         } else if (comando == CommandName.DESENCRIPTAR_BTN) {
-            System.out.println("Boton Desencriptado pulsado.");
+            System.out.println("El boton de desencriptado ha sido pulsado.");
             desencriptarActionPerformed();
         }
     }
 
+    //ACCIONES DEL BOTON ENCRIPTAR
     private void encriptarActionPerformed() {
 
         String texto = userInterface.getEntradaTexto().getText();
         int tipoCifrado = userInterface.getSelectorTipo().getSelectedIndex();
         String resultado;
 
+        //SELECTOR PARA CESAR O AES
         switch (tipoCifrado) {
-            case 0:
+
+            case 0: //CUANDO SE SELECCIONA ALGORITMO CESAR
+
                 int clave = (int) userInterface.getClaveAlgoritmo().getValue();
                 int valorAlfabeto = userInterface.getSelAlfabeto().getSelectedIndex();
                 String alfabeto = "";
-                switch (valorAlfabeto) {
+
+                switch (valorAlfabeto) { //SELECTOR PARA EL TIPO DE ALFABETO
+
                     case 0:
                         alfabeto = Alfabeto.ESP.toString();
                         break;
+
                     case 1:
                         alfabeto = Alfabeto.ENG.toString();
                         break;
@@ -61,45 +68,69 @@ public class Controlador implements ActionListener {
                 userInterface.getResultadoEncriptacion().setText(resultado);
                 break;
 
-            case 1:
+            case 1: //CUANDO SE SELECCIONA ALGORITMO AES
 
                 byte[] contraseña = texto.getBytes(StandardCharsets.UTF_8);
+                int valorModoAES = userInterface.getSelectorModoAES().getSelectedIndex();
                 int valorKey = userInterface.getSelectorKey().getSelectedIndex();
                 int keySize = 0;
-                switch (valorKey) {
+
+                switch (valorKey) { //SELECTOR DEL VALOR DEL CIFRADO SKEY
+
                     case 0:
                         keySize = 128;
                         break;
+
                     case 1:
                         keySize = 192;
                         break;
+
                     case 2:
                         keySize = 256;
                         break;
                 }
                 SecretKey skey = keygenKeyGeneration(keySize);
-                byte[] encriptado = encryptData(skey, contraseña);
-                resultado = byteToHex(encriptado);
-                userInterface.getResultadoEncriptacion().setText(resultado);
-                break;
+
+                switch (valorModoAES) { //SELECTOR DEL MODO DE CIFRADO AES : ECB O CBC
+
+                    case 0: //CASO ECB
+
+                        byte[] encriptadoECB = encryptDataECB(skey, contraseña);
+                        resultado = byteToHex(encriptadoECB);
+                        userInterface.getResultadoEncriptacion().setText(resultado);
+
+                    case 1: //CASO CBC
+
+                        byte[] encriptadoCBC = encryptDataCBC(skey, contraseña);
+                        resultado = byteToHex(encriptadoCBC);
+                        userInterface.getResultadoEncriptacion().setText(resultado);
+                        break;
+                }
         }
     }
 
+    //ACCIONES DEL BOTON DESENCRIPTAR
     private void desencriptarActionPerformed() {
 
         String texto = userInterface.getEntradaTexto().getText();
         int tipoCifrado = userInterface.getSelectorTipo().getSelectedIndex();
         String resultado;
 
+        //SELECTOR PARA CESAR O AES
         switch (tipoCifrado) {
-            case 0:
+
+            case 0: //ALGORITMO CESAR
+
                 int clave = (int) userInterface.getClaveAlgoritmo().getValue();
                 int valorAlfabeto = userInterface.getSelAlfabeto().getSelectedIndex();
                 String alfabeto = "";
-                switch (valorAlfabeto) {
+
+                switch (valorAlfabeto) { //SELECTOR PARA EL TIPO DE ALFABETO
+                    
                     case 0:
                         alfabeto = Alfabeto.ESP.toString();
                         break;
+                        
                     case 1:
                         alfabeto = Alfabeto.ENG.toString();
                         break;
@@ -108,26 +139,45 @@ public class Controlador implements ActionListener {
                 userInterface.getResultadoDesencriptacion().setText(resultado);
                 break;
 
-            case 1:
+            case 1: //ALGORITMO AES
+
                 byte[] contraseña = texto.getBytes(StandardCharsets.UTF_8);
+                int valorModoAES = userInterface.getSelectorModoAES().getSelectedIndex();
                 int valorKey = userInterface.getSelectorKey().getSelectedIndex();
                 int keySize = 0;
-                switch (valorKey) {
+
+                switch (valorKey) { //VALOR SELECCIONADO EN LA SKEY
+                    
                     case 0:
                         keySize = 128;
                         break;
+                        
                     case 1:
                         keySize = 192;
                         break;
+                        
                     case 2:
                         keySize = 256;
                         break;
                 }
                 SecretKey skey = keygenKeyGeneration(keySize);
-                byte[] desencriptado = decryptData(skey, contraseña);
-                resultado = byteToHex(desencriptado);
-                userInterface.getResultadoDesencriptacion().setText(resultado);
-        }
 
+                switch (valorModoAES) { //SELECTOR DEL MODO AES
+
+                    case 0: //CASO ECB
+
+                        byte[] desencriptado = decryptDataECB(skey, contraseña);
+                        resultado = byteToHex(desencriptado);
+                        userInterface.getResultadoDesencriptacion().setText(resultado);
+                        break;
+
+                    case 1: //CASO CBC
+
+                        byte[] desencriptadoCBC = encryptDataCBC(skey, contraseña);
+                        resultado = byteToHex(desencriptadoCBC);
+                        userInterface.getResultadoEncriptacion().setText(resultado);
+                        break;
+                }
+        }
     }
 }
