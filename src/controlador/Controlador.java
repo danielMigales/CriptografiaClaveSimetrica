@@ -41,7 +41,7 @@ public class Controlador implements ActionListener {
     //ACCIONES DEL BOTON ENCRIPTAR
     private void encriptarActionPerformed() {
 
-        String texto = userInterface.getEntradaTexto().getText();
+        String texto = userInterface.getEntradaTextoCifrado().getText();
         int tipoCifrado = userInterface.getSelectorTipo().getSelectedIndex();
         String resultado;
 
@@ -74,6 +74,9 @@ public class Controlador implements ActionListener {
                 int valorModoAES = userInterface.getSelectorModoAES().getSelectedIndex();
                 int valorKey = userInterface.getSelectorKey().getSelectedIndex();
                 int keySize = 0;
+                String hash = userInterface.gettextFieldHash().getText();
+                boolean CasillaHash = false;
+                SecretKey skey;
 
                 switch (valorKey) { //SELECTOR DEL VALOR DEL CIFRADO SKEY
 
@@ -88,8 +91,27 @@ public class Controlador implements ActionListener {
                     case 2:
                         keySize = 256;
                         break;
+
+                    case 3:
+                        keySize = 128;
+                        CasillaHash = true;
+                        break;
+
+                    case 4:
+                        keySize = 192;
+                        CasillaHash = true;
+                        break;
+
+                    case 5:
+                        keySize = 256;
+                        CasillaHash = true;
+                        break;
                 }
-                SecretKey skey = keygenKeyGeneration(keySize);
+                if (CasillaHash) {
+                    skey = passwordKeyGeneration(hash, keySize);
+                } else {
+                    skey = keygenKeyGeneration(keySize);
+                }
 
                 switch (valorModoAES) { //SELECTOR DEL MODO DE CIFRADO AES : ECB O CBC
 
@@ -106,14 +128,13 @@ public class Controlador implements ActionListener {
                         userInterface.getResultadoEncriptacion().setText(resultado);
                         break;
                 }
-
         }
     }
 
     //ACCIONES DEL BOTON DESENCRIPTAR
     private void desencriptarActionPerformed() {
 
-        String texto = userInterface.getEntradaTexto().getText();
+        String texto = userInterface.getEntradaTextoDescifrado().getText();
         int tipoCifrado = userInterface.getSelectorTipo().getSelectedIndex();
         String resultado;
 
